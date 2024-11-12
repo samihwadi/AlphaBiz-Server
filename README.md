@@ -1,6 +1,6 @@
 # BizPoints Backend - Client Registration & Authentication System
 
-This repository contains the backend code for the **Client Registration & Authentication System** of the BizPoints loyalty portal, developed by **AlphaBiz Solutions**. The system is designed to handle client registration, authentication, and role-based access control (RBAC), providing secure access to the loyalty features available in the BizPoints platform. Built with **Node.js**, **Express**, and **MongoDB**, this sub-project serves as the core access layer for clients and admins alike.
+This repository contains the backend code for the **Client Registration & Authentication System** of the BizPoints loyalty portal. The system is designed to handle client registration, authentication, and role-based access control (RBAC), providing secure access to the loyalty features available in the BizPoints platform. Built with **Node.js**, **Express**, and **MongoDB**, this sub-project serves as the core access layer for clients and admins alike.
 
 ## Table of Contents
 
