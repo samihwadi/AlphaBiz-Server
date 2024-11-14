@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const cors = require('cors')
-const { login } = require('../controllers/authController')
+const { userLogin, userRegister, adminRegister } = require('../controllers/authController')
 
 // Middleware
 router.use(cors({
@@ -9,7 +9,9 @@ router.use(cors({
     origin: 'http://localhost:5173'
 }))
 
-router.get('/login', login)
+router.get('/login/user', userLogin)
+router.get('/register', userRegister)
+router.get('/register/admin', adminRegister)
 
 module.exports = router
 

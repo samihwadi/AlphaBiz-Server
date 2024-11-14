@@ -1,11 +1,16 @@
-const Profile = require('../models/profileModel')
+const Profile = require('../models/UserModel')
+
+// Register Admin
+const adminRegister = (req, res) => {
+    res.json({mssg: "Create registration function"})
+}
 //Register User
-const register = (req, res) => {
+const userRegister = (req, res) => {
     res.json({mssg: "Create registration function"})
 }
 // Login User
-const login = (req, res) => {
+const userLogin = (req, res) => {
     res.json({mssg: "Create login function"})
 }
 
-module.exports = { login, register }
+module.exports = { userLogin, userRegister, adminRegister }

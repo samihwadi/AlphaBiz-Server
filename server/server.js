@@ -8,7 +8,7 @@ const routes = require('./routes/routes')
 app.use(express.json())
 
 // Routes
-app.use('/', routes)
+app.use('/api', routes)
 
 
 
