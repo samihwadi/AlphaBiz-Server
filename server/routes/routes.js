@@ -9,9 +9,9 @@ router.use(cors({
     origin: 'http://localhost:5173'
 }))
 
-router.get('/login/user', userLogin)
-router.get('/register', userRegister)
-router.get('/register/admin', adminRegister)
+router.post('/login/user', userLogin)
+router.post('/register', userRegister)
+router.post('/register/admin', adminRegister)
 
 module.exports = router
 
