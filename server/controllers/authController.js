@@ -1,8 +1,7 @@
 import User from '../models/UserModel.js'
 import Admin from '../models/AdminModel.js'
 import { hashPassword, comparePassword } from '../helpers/auth.js'
-import dotenv from 'dotenv'
-dotenv.config()
+import { sendEmailOTP } from '../helpers/email.js'
 import jwt from 'jsonwebtoken'
 
 // Generate Code Function
@@ -24,7 +23,7 @@ const generateToken = (res, userID) => {
 // Register Admin
 export const adminRegister = async (req, res) => {
     const { name, email, password} = req.body;
-    checkName = name.trim()
+    const checkName = name.trim()
     try {
         if(!name || (!/^[a-zA-Z\s]*$/.test(checkName))) {
             return res.json({
@@ -61,7 +60,7 @@ export const adminRegister = async (req, res) => {
 //Register User
 export const userRegister = async (req, res) => {
     const { name, email, password } = req.body;
-    checkName = name.trim()
+    const checkName = name.trim()
     try {
         if(!name || (!/^[a-zA-Z\s]*$/.test(checkName))) {
             return res.json({
@@ -82,8 +81,7 @@ export const userRegister = async (req, res) => {
         const user = await User.create({
             name,
             email,
-            password: hashedPassword,
-            verificationToken,
+            password: hashedPassword
         })
         return res.json({
             message: "User created successfully",
@@ -112,14 +110,52 @@ export const userLogin = async (req, res) => {
         if (match) {
             const verificationToken = generateVerificationCode();
             user.verificationToken = verificationToken;
-            user.verificationTokenExpiresAt = Date.now() + 24 * 60 * 60 * 1000; // 24 Hours
-            
+            user.verificationTokenExpiresAt = Date.now() + 900000; // 15 minutes
+            await user.save()
+            // Send email OTP
+            try {
+                await sendEmailOTP(user.email, verificationToken);
+                return res.json({
+                    message: 'Login successful, OTP sent to your email.'
+                });
+            } catch (emailError) {
+                console.error('Error sending email:', emailError);
+                return res.status(500).json({
+                    error: 'Failed to send email OTP. Please try again.'
+                });
+            }
+        } else {
+            res.json({
+                error: 'Incorrect Password'
+            })
         }
     } catch (error) {
-        
+        console.log(error)
     }
 }
 // Login Admin
-export const adminLogin = (req, res) => {
-    res.json({mssg: "Create login function"})
+export const adminLogin = async (req, res) => {
+    const { email, password } = req.body
+    const admin = await Admin.findOne({email})
+    try {
+        // Check if Admin exists
+        if (!admin) {
+            return res.json({
+                error: 'Admin does not exist'
+            })
+        }
+        // Check if passwords match
+        const match = await comparePassword(password, admin.password)
+        if (!match) {
+            return res.json({
+                error: 'Incorrect Password'
+            })
+        } else {
+            return res.status(200).json({
+                message: 'Login Successful'
+            })
+        }
+    } catch (error) {
+        console.log(error)
+    }
 }
