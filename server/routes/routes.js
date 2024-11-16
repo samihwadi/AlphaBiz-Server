@@ -1,7 +1,7 @@
-const express = require('express')
+import express from 'express'
 const router = express.Router()
-const cors = require('cors')
-const { userLogin, userRegister, adminRegister } = require('../controllers/authController')
+import cors from 'cors'
+import { userLogin, adminLogin, userRegister, adminRegister } from '../controllers/authController.js'
 
 // Middleware
 router.use(cors({
@@ -10,8 +10,9 @@ router.use(cors({
 }))
 
 router.post('/login/user', userLogin)
+router.post('/login/admin', adminLogin)
 router.post('/register/user', userRegister)
 router.post('/register/admin', adminRegister)
 
-module.exports = router
+export default router
 

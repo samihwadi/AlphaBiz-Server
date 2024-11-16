@@ -1,8 +1,9 @@
-require('dotenv').config()
-const express = require('express')
+import dotenv from 'dotenv'
+dotenv.config()
+import express from 'express'
 const app = express()
-const mongoose = require('mongoose')
-const routes = require('./routes/routes')
+import mongoose from 'mongoose'
+import routes from './routes/routes.js'
 
 // Middleware
 app.use(express.json())

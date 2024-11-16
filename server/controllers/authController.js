@@ -1,8 +1,9 @@
-const User = require('../models/UserModel')
-const Admin = require('../models/AdminModel')
-const { hashPassword, comparePassword} = require('../helpers/auth')
-require('dotenv').config()
-const jwt = require('jsonwebtoken')
+import User from '../models/UserModel.js'
+import Admin from '../models/AdminModel.js'
+import { hashPassword, comparePassword } from '../helpers/auth.js'
+import dotenv from 'dotenv'
+dotenv.config()
+import jwt from 'jsonwebtoken'
 
 // Generate Code Function
 const generateVerificationCode = () => Math.floor(1000 + Math.random() * 9000).toString();
@@ -21,7 +22,7 @@ const generateToken = (res, userID) => {
 }
 
 // Register Admin
-const adminRegister = async (req, res) => {
+export const adminRegister = async (req, res) => {
     const { name, email, password} = req.body;
     checkName = name.trim()
     try {
@@ -58,7 +59,7 @@ const adminRegister = async (req, res) => {
     }
 }
 //Register User
-const userRegister = async (req, res) => {
+export const userRegister = async (req, res) => {
     const { name, email, password } = req.body;
     checkName = name.trim()
     try {
@@ -78,13 +79,11 @@ const userRegister = async (req, res) => {
             })
         }
         const hashedPassword = await hashPassword(password);
-        const verificationToken = generateVerificationCode();
         const user = await User.create({
             name,
             email,
             password: hashedPassword,
             verificationToken,
-            verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000 // 24 Hours
         })
         return res.json({
             message: "User created successfully",
@@ -98,8 +97,29 @@ const userRegister = async (req, res) => {
     }
 }
 // Login User
-const userLogin = (req, res) => {
+export const userLogin = async (req, res) => {
+    const { email, password} = req.body;
+    const user = await User.findOne({email});
+    try {
+        // Check if user exists
+        if (!user) {
+            return res.json({
+                error: 'No user found'
+            })
+        }
+        // Check if passwords match
+        const match = await comparePassword(password, user.password)
+        if (match) {
+            const verificationToken = generateVerificationCode();
+            user.verificationToken = verificationToken;
+            user.verificationTokenExpiresAt = Date.now() + 24 * 60 * 60 * 1000; // 24 Hours
+            
+        }
+    } catch (error) {
+        
+    }
+}
+// Login Admin
+export const adminLogin = (req, res) => {
     res.json({mssg: "Create login function"})
 }
-
-module.exports = { userLogin, userRegister, adminRegister }
