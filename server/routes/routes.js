@@ -10,7 +10,7 @@ router.use(cors({
 }))
 
 router.post('/login/user', userLogin)
-router.post('/register', userRegister)
+router.post('/register/user', userRegister)
 router.post('/register/admin', adminRegister)
 
 module.exports = router
