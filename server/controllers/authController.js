@@ -8,8 +8,8 @@ import jwt from 'jsonwebtoken'
 const generateVerificationCode = () => Math.floor(1000 + Math.random() * 9000).toString();
 
 // JWT Function
-const generateToken = (res, userID) => {
-    const token = jwt.sign({ userID }, process.env.JWT_SECRET, {
+const generateToken = (res, userID, userName, userEmail) => {
+    const token = jwt.sign({ userID, userName, userEmail }, process.env.JWT_SECRET, {
         expiresIn: '7d', // Token expires in 7 days
     });
     res.cookie("token", token, {
@@ -179,7 +179,7 @@ export const verifyUser = async (req, res) => {
             user.verificationTokenExpiresAt = undefined
             await user.save()
             // Assign JWT token to the user
-            const token = generateToken(res, user._id);
+            const token = generateToken(res, user._id, user.name, user.email);
         }
         res.status(200).json({
             message: 'User verified successfully',
@@ -193,4 +193,24 @@ export const verifyUser = async (req, res) => {
     }
 }
 
+// Logout 
+export const logout = async (req, res) => {
+    res.clearCookie("token")
+    res.status(200).json({
+        message: "Logged out successfully"
+    })
+}
+
+// Getting User Profile
+export const getProfile = async (req, res) => {
+    const {token} = req.cookies
+    if(token) {
+        jwt.verify(token, process.env.JWT_SECRET, {}, (err, user) => {
+            if(err) throw err;
+            res.json(user)
+        })
+    } else {
+        res.json(null)
+    }
+}
 
