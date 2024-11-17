@@ -9,16 +9,16 @@ const generateVerificationCode = () => Math.floor(1000 + Math.random() * 9000).t
 
 // JWT Function
 const generateToken = (res, userID) => {
-    const token = jwt.sign({ userID }, process.env.JWT_SECRET, {}, (err, token) => {
-        if (err) throw err;
-        res.cookie("token", token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            maxAge: 7 * 24 * 60 * 60 * 1000 // Expires after 7 days
-        })
-    })
+    const token = jwt.sign({ userID }, process.env.JWT_SECRET, {
+        expiresIn: '7d', // Token expires in 7 days
+    });
+    res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
+    });
     return token;
-}
+};
 
 // Register Admin
 export const adminRegister = async (req, res) => {
@@ -109,6 +109,7 @@ export const userLogin = async (req, res) => {
         const match = await comparePassword(password, user.password)
         if (match) {
             const verificationToken = generateVerificationCode();
+            user.verified = false
             user.verificationToken = verificationToken;
             user.verificationTokenExpiresAt = Date.now() + 900000; // 15 minutes
             await user.save()
@@ -159,3 +160,37 @@ export const adminLogin = async (req, res) => {
         console.log(error)
     }
 }
+
+// Verifying OTP
+export const verifyUser = async (req, res) => {
+    const { otpCode } = req.body;
+    try {
+        const user = await User.findOne({
+            verificationToken: otpCode,
+            verificationTokenExpiresAt: { $gt: Date.now() }
+        })
+        if (!user) {
+            return res.status(400).json({
+                error: 'Invalid or expired verification code'
+            })
+        } else {
+            user.verified = true
+            user.verificationToken = undefined
+            user.verificationTokenExpiresAt = undefined
+            await user.save()
+            // Assign JWT token to the user
+            const token = generateToken(res, user._id);
+        }
+        res.status(200).json({
+            message: 'User verified successfully',
+            user: {
+                ...user._doc,
+                password: undefined
+            }
+        })
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+

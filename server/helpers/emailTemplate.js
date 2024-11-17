@@ -16,7 +16,7 @@ export const VERIFICATION_EMAIL_TEMPLATE = `
     <div style="text-align: center; margin: 30px 0;">
       <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #FFC801;">{verificationCode}</span>
     </div>
-    <p>Enter this code on the verification page to complete your registration.</p>
+    <p>Enter this code on the verification page to complete your login.</p>
     <p>This code will expire in 15 minutes for security reasons.</p>
     <p>If you didn't create an account with us, please ignore this email.</p>
     <p>Best regards,<br>AlphaBiz Team</p>
