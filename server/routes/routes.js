@@ -6,7 +6,7 @@ import { userLogin, adminLogin, userRegister, adminRegister, verifyUser, logout,
 // Middleware
 router.use(cors({
     credentials: true,
-    origin: 'http://localhost:3000'
+    origin: 'https://alpha-biz-jessicamorcos-projects.vercel.app'
 }))
 
 router.post('/login/user', userLogin)
