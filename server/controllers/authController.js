@@ -151,11 +151,12 @@ export const adminLogin = async (req, res) => {
             return res.json({
                 error: 'Incorrect Password'
             })
-        } else {
-            return res.status(200).json({
-                message: 'Login Successful'
-            })
-        }
+        } 
+        const token = generateToken(res, admin._id, admin.name, admin.email);
+        res.status(200).json({
+            message: 'Admin logged in successfully'
+        })
+
     } catch (error) {
         console.log(error)
     }
