@@ -22,8 +22,25 @@ const UserSchema = new Schema({
     resetPasswordToken: String,
     resetPasswordExpiresAt: Date,
     verificationToken: String,
-    verificationTokenExpiresAt: Date
-})
+    verificationTokenExpiresAt: Date,
+    age: {
+        type: Number,
+        required: true
+    },
+    gender: {
+        type: String,
+        enum: ['male', 'female'],
+        required: true
+    },
+    contactNumber: {
+        type: String,
+        required: true
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    }
+});
 
 const User = mongoose.model('User', UserSchema);
 export default User;
