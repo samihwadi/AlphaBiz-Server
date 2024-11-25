@@ -224,22 +224,15 @@ export const verifyUser = async (req, res) => {
             user.verificationTokenExpiresAt = undefined
             await user.save()
             // Assign JWT token to the user
-            jwt.sign({email: user.email, name: user.name, id: user._id}, process.env.JWT_SECRET, {expiresIn: '7d'}, (err, token) => {
-                if(err) throw err;
-                res.cookie("token", token, {
-                            httpOnly: true,
-                            secure: process.env.NODE_ENV === 'production',
-                            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
-                        }).json(user);
-            })
+            const token = generateToken(res, user._id, user.name, user.email);
         }
-        // res.status(200).json({
-        //     message: 'User verified successfully',
-        //     user: {
-        //         ...user._doc,
-        //         password: undefined
-        //     }
-        // })
+        res.status(200).json({
+            message: 'User verified successfully',
+            user: {
+                ...user._doc,
+                password: undefined
+            }
+        })
     } catch (error) {
         console.log(error)
     }
